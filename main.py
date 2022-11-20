@@ -124,7 +124,7 @@ def get_object_by_id(object_name, id):
     if (object == None):
         return False
     if (not id):
-        return get_objects()
+        return get_objects(object_name)
     find_result = find_object_by(object_name, 'id', id)
     if (not find_result[0]):
         print('No id found.')
@@ -144,7 +144,7 @@ def get_objects_by_name(object_name, name):
     if (object == None):
         return False
     if (not name):
-        return get_objects()
+        return get_objects(object_name)
     find_result = find_object_by(object_name, 'name', name)
     if (not find_result[0]):
         print('No name found.')
