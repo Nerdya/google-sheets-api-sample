@@ -1,32 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showerror
-from googlesheetsapi import *
+from apis.googlesheetsapi import *
+from modules.AboutFrame import AboutFrame
+from modules.BookFrame import BookFrame
 
-# # Find books
-# def search_button():
-#     try:
-#         dellist(tree)
-#         val = searchEntry.get()
-#         if (str(val).isnumeric()):
-#             values = get_object_by_id('book', val)
-#         else:
-#             values = get_objects_by_name('book', val)
-#         if (not values or len(values) == 0):
-#             tk.messagebox.showinfo(title='Hi', message='Không có sách như tìm kiếm')
-#         else:
-#             results = []
-#             for item in values:
-#                 results.append(tuple(item))
-#             for result in results:
-#                 tree.insert('', tk.END, values=result)
-#     except Exception as e:
-#         pass
-#     finally:
-#         searchEntry.delete(0, 'end')
-
-# # Import books
-# #@log
 # def importbook_button():
 
 #     def item_selected(event): # hàm lựa chọn sách trên bảng
@@ -71,229 +49,16 @@ from googlesheetsapi import *
 #     btn_select = tk.Button(importwindow, text='Nhập sách', command=add_book_to_db)
 #     btn_select.place(x=1100, y=100)
 
-# #@log
-# def lend_book():
-
-#     def toggle(button, state):
-#         if (button["state"] == "normal" and state == 'disabled'):
-#             button["state"] = "disabled"
-#             button["text"] = "enable"
-#         if (button["state"] == "disabled" and state == 'enabled'):
-#             button["state"] = "normal"
-#             button["text"] = "disable"
-
-#     def checklc_button():
-#         values = get_object_by_id('lc', entry_card_id.get())
-#         if (not values):
-#             tk.messagebox.showerror(title='Error', message='Thẻ thư viện không hợp lệ!')
-#             toggle(btn_append, 'disabled')
-#         else:
-#             tk.messagebox.showinfo(title='Thông Báo', message='Thẻ thư viện hợp lệ!')
-#             toggle(btn_append, 'enabled')
-    
-#     editwindow = tk.Toplevel()
-#     editwindow.title('Mượn sách')
-#     editwindow.geometry('450x300+800+300')
-#     editwindow.resizable(0, 0)
-
-#     var = tk.StringVar()
-#     tk.Label(editwindow, text='Mã thẻ:').place(x=50, y=20)
-#     tk.Label(editwindow, text='Mã sách:').place(x=50, y=90)
-#     tk.Label(editwindow, text='Tên sách:').place(x=50, y=130)
-#     tk.Label(editwindow, text='Ngày mượn:').place(x=50, y=170)
-#     tk.Label(editwindow, text='Ngày cần trả:').place(x=50, y=210)
-
-#     val_eb = tk.StringVar()
-#     val_ec = tk.StringVar()
-#     val_ep = tk.StringVar()
-#     val_es = tk.StringVar()
-#     val_el = tk.StringVar()
-    
-#     entry_card_id = tk.Entry(editwindow, textvariable=val_eb)
-#     entry_book_id = tk.Entry(editwindow, textvariable=val_ec)
-#     entry_book_name = tk.Entry(editwindow, textvariable=val_ep)
-#     entry_lend_date = tk.Entry(editwindow, textvariable=val_es)
-#     entry_return_date = tk.Entry(editwindow, textvariable=val_el)
-
-#     entry_card_id.place(x=160, y=20)
-#     entry_book_id.place(x=160, y=90)
-#     entry_book_name.place(x=160, y=130)
-#     entry_lend_date.place(x=160, y=170)
-#     entry_return_date.place(x=160, y=210)
-
-#     btn_append = tk.Button(editwindow, text='Cho mượn', command=appendbook_button)
-#     btn_append.place(x=150, y=260)
-#     btn_check = tk.Button(editwindow, text='Kiểm tra thẻ', command=checklc_button)
-#     btn_check.place(x=170, y=50)
-
-class AboutFrame(tk.Frame):
-    def __init__(self, parent, controller):
-
-        tk.Frame.__init__(self, parent)
-
-        label = ttk.Label(self, text='Author: Nguyễn Kim Cương')
-        label.pack(ipadx=10, ipady=10)
-
-class BookFrame(tk.Frame):
-    def __init__(self, parent, controller):
-
-        tk.Frame.__init__(self, parent)
-        # Configure frame
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=3)
-        self.rowconfigure(0, weight=1)
-
-        # Left menu
-        menu_left = tk.Frame(self, highlightbackground='#ababab', highlightthickness=1)
-        menu_left.columnconfigure(0, weight=1)
-        menu_left.rowconfigure(0, weight=1)
-        menu_left.rowconfigure(1, weight=0)
-
-        menu_left.grid(column=0, row=0, sticky=tk.NSEW, padx=(10, 0), pady=10)
-
-        # Upper left menu
-        menu_upper_left = tk.Frame(menu_left)
-        menu_upper_left.columnconfigure(0, weight=1)
-        menu_upper_left.columnconfigure(1, weight=2)
-        menu_upper_left.rowconfigure(10, weight=1)
-        
-        menu_upper_left.grid(column=0, row=0, sticky=tk.NSEW)
-
-        label_arr = []
-        entry_arr = []
-        for i in range(len(controller.book_label)):
-            label_arr.append(ttk.Label(menu_upper_left, text=controller.book_label[i]))
-            label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
-            entry_arr.append(ttk.Entry(menu_upper_left, textvariable=controller.book_var[i]))
-            entry_arr[i].grid(column=1, row=i, sticky=tk.EW, padx=(0, 10), pady=10)
-
-        # Lower left menu
-        menu_lower_left = tk.Frame(menu_left)
-        menu_lower_left.columnconfigure(0, weight=1)
-        menu_lower_left.columnconfigure(1, weight=1)
-        menu_lower_left.rowconfigure(0, weight=1)
-        menu_lower_left.rowconfigure(1, weight=1)
-
-        menu_lower_left.grid(column=0, row=1, sticky=tk.NSEW)
-
-        def search():
-            try:
-                # Clear the treeview list items
-                for item in tree.get_children():
-                    tree.delete(item)
-
-                searchValue = controller.book_var[1].get()
-                result = get_objects_by_name('book', searchValue)
-                if (not result or len(result) == 0):
-                    showerror(title='Error', message='Không có dữ liệu.')
-                else:
-                    rows = []
-                    for row in result:
-                        rows.append(tuple(row))
-                    for row in rows:
-                        tree.insert('', tk.END, values=row)
-            except Exception as e:
-                print(e)
-                pass
-            # finally:
-            #     controller.book_var[1].delete(0, 'end')
-
-        button_search = ttk.Button(menu_lower_left, text='Tìm', compound=tk.LEFT, command=lambda: search())
-        button_search.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
-
-        def add():
-            print()
-
-        button_add = ttk.Button(menu_lower_left, text='Thêm', compound=tk.LEFT, command=lambda: add())
-        button_add.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
-
-        def edit():
-            print()
-
-        button_edit = ttk.Button(menu_lower_left, text='Sửa', compound=tk.LEFT, command=lambda: edit())
-        button_edit.grid(column=0, row=1, sticky=tk.NSEW, padx=10, pady=10)
-
-        def delete():
-            print()
-
-        button_delete = ttk.Button(menu_lower_left, text='Xóa', compound=tk.LEFT, command=lambda: delete())
-        button_delete.grid(column=1, row=1, sticky=tk.NSEW, padx=10, pady=10)
-
-        # Right menu
-        menu_right = tk.Frame(self, highlightbackground='#ababab', highlightthickness=1)
-        menu_right.columnconfigure(0, weight=1)
-        menu_right.columnconfigure(1, weight=0)
-        menu_right.rowconfigure(0, weight=1)
-
-        menu_right.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
-
-        # Define columns
-        columns = ('id', 'name', 'publisher_id', 'author_id', 'category_id', 'position_id', 'published_year', 'total_amount', 'available_amount', 'price')
-
-        tree = ttk.Treeview(menu_right, columns=columns, show='headings')
-
-        # Define headings
-        for i in range(len(columns)):
-            tree.heading(columns[i], text=controller.book_label[i])
-
-        widths = [20, 160, 30, 30, 30, 30, 30, 30, 30, 30]
-
-        # Customize columns
-        for i in range(len(columns)):
-            tree.column(columns[i], width=widths[i], anchor=tk.W)
-
-        def get_all():
-            # Sample data
-            # rows = []
-            # for n in range(1, 100):
-            #     rows.append((f'{n}', f'{n}', f'{n}', f'{n}', f'{n}', f'{n}', f'{n}', f'{n}', f'{n}', f'{n}'))
-            # for row in rows:
-            #     tree.insert('', tk.END, values=row)
-            try:
-                # Clear the treeview list items
-                for item in tree.get_children():
-                    tree.delete(item)
-
-                result = get_objects('book')
-                if (not result or len(result) == 0):
-                    showerror(title='Error', message='Không có dữ liệu.')
-                else:
-                    rows = []
-                    for row in result:
-                        rows.append(tuple(row))
-                    for row in rows:
-                        tree.insert('', tk.END, values=row)
-            except Exception as e:
-                print(e)
-                pass
-
-        # Initialize data
-        get_all()
-
-        def item_selected(event):
-            for selected_item in tree.selection():
-                item = tree.item(selected_item)
-                record = item['values']
-                # Show a message
-                showinfo(title='Information', message=record)
-
-        # Selection event
-        tree.bind('<<TreeviewSelect>>', item_selected)
-
-        tree.grid(row=0, column=0, sticky=tk.NSEW)
-
-        scrollbar = ttk.Scrollbar(menu_right, orient='vertical', command=tree.yview)
-        tree.configure(yscroll=scrollbar.set)
-        scrollbar.grid(column=1, row=0, sticky=tk.NS)
-
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.book_label = ['Mã sách', 'Tên sách', 'Mã NXB', 'Mã tác giả', 'Mã TLS', 'Mã vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
-        self.book_var = []
-        for i in range(len(self.book_label)):
-            self.book_var.append(tk.StringVar())
+        # Book variables
+        self.book_headings = ('id', 'name', 'publisher_id', 'author_id', 'category_id', 'position_id', 'published_year', 'total_amount', 'available_amount', 'price')
+        self.book_labels = ['Mã sách', 'Tên sách', 'Mã NXB', 'Mã tác giả', 'Mã TLS', 'Mã vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
+        self.book_vars = []
+        for i in range(len(self.book_labels)):
+            self.book_vars.append(tk.StringVar())
 
         # Root window
         self.title('Hệ thống quản lý thư viện')

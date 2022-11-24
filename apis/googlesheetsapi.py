@@ -1,6 +1,6 @@
-from snippets.sheet_append_values import append_values
-from snippets.sheet_get_values import get_values
-from snippets.sheet_update_values import update_values
+from apis.snippets.sheet_append_values import append_values
+from apis.snippets.sheet_get_values import get_values
+from apis.snippets.sheet_update_values import update_values
 
 SPREADSHEET_ID = '1woHLQaJU4PKlurYx2cT0k89pXVCRQBN0Hwr1rxgAUQI'
 

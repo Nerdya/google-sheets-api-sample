@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from snippets.get_token import get_token
+from apis.snippets.get_token import get_token
 # from get_token import get_token
 
 from googleapiclient.discovery import build
@@ -10,7 +10,7 @@ from googleapiclient.errors import HttpError
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
-def update_values(spreadsheet_id, range_name, values):
+def get_values(spreadsheet_id, range_name):
     """
     Creates the batch_update the user has access to.
     """
@@ -20,14 +20,12 @@ def update_values(spreadsheet_id, range_name, values):
         service = build('sheets', 'v4', credentials=creds)
 
         # Call the sheets API
-        result = service.spreadsheets().values().update(
+        result = service.spreadsheets().values().get(
             spreadsheetId = spreadsheet_id,
-            range = range_name,
-            valueInputOption = 'USER_ENTERED',
-            body = { 'values': values }
+            range = range_name
         ).execute()
-        updatedCells = result.get('updatedCells')
-        print(f"{updatedCells} cells updated.")
+        values = len(result.get('values', []))
+        print(f"{values} rows retrieved.")
         return result
     except HttpError as error:
         print(f"An error occurred: {error}")
@@ -35,12 +33,8 @@ def update_values(spreadsheet_id, range_name, values):
 
 
 if __name__ == '__main__':
-    # Pass: spreadsheet_id, range_name, values
-    update_values(
+    # Pass: spreadsheet_id, range_name
+    get_values(
         "1woHLQaJU4PKlurYx2cT0k89pXVCRQBN0Hwr1rxgAUQI",
-        "TheThuVien!A1:C2",
-        [
-            ['A', 'B'],
-            ['C', 'D']
-        ]
+        "Sach!A2:I8"
     )
