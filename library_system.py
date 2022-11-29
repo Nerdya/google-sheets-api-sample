@@ -67,13 +67,6 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        # Book variables
-        self.book_headings = ('id', 'name', 'publisher_id', 'author_id', 'category_id', 'position_id', 'published_year', 'total_amount', 'available_amount', 'price')
-        self.book_labels = ['Mã sách', 'Tên sách', 'Mã NXB', 'Mã tác giả', 'Mã TLS', 'Mã vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
-        self.book_vars = []
-        for i in range(len(self.book_labels)):
-            self.book_vars.append(tk.StringVar())
-
         # Root window
         self.title('Hệ thống quản lý thư viện')
         self.geometry('1280x720')
@@ -111,9 +104,6 @@ class App(tk.Tk):
 
         # Default frame
         self.show_frame(BookFrame)
-
-        def no_func():
-            print('Nothing here')
 
         # Create a menubar
         menubar = tk.Menu(self)

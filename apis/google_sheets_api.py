@@ -4,40 +4,66 @@ from apis.snippets.sheet_update_values import update_values
 
 SPREADSHEET_ID = '1woHLQaJU4PKlurYx2cT0k89pXVCRQBN0Hwr1rxgAUQI'
 
-class Book:
-    sheet_name = 'Sach'
-    start_col = 'A'
-    end_col = 'J'
-    delete_col = 'K'
-    start_row = 2
-    end_row = 1000
-
-class LibraryCard:
-    sheet_name = 'TheThuVien'
-    start_col = 'A'
-    end_col = 'J'
-    delete_col = 'K'
-    start_row = 2
-    end_row = 1000
-
-book = Book()
-lc = LibraryCard()
-
+objects = {
+    'library_card': {
+        'sheet_name': 'TheThuVien',
+        'start_col': 'A',
+        'end_col': 'J',
+        'delete_col': 'K',
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'book': {
+        'sheet_name': 'Sach',
+        'start_col': 'A',
+        'end_col': 'J',
+        'delete_col': 'K',
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'publisher': {
+        'sheet_name': 'NhaXuatBan',
+        'start_col': 'A',
+        'end_col': 'D',
+        'delete_col': 'E',
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'author': {
+        'sheet_name': 'TacGia',
+        'start_col': 'A',
+        'end_col': 'B',
+        'delete_col': 'C',
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'category': {
+        'sheet_name': 'TheLoaiSach',
+        'start_col': 'A',
+        'end_col': 'B',
+        'delete_col': 'C',
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'position': {
+        'sheet_name': 'ViTri',
+        'start_col': 'A',
+        'end_col': 'B',
+        'delete_col': 'C',
+        'start_row': 2,
+        'end_row': 1000
+    }
+}
 
 def range_name(sheet_name, start_col, start_row, end_col, end_row):
     return f'{sheet_name}!{start_col}{start_row}:{end_col}{end_row}'
 
-
 def parse_object_name(object_name):
-    match object_name:
-        case 'book':
-            return book
-        case 'lc':
-            return lc
-        case _:
-            print('object_name invalid!')
-            return None
-
+    result = objects[object_name]
+    if (result):
+        return result
+    else:
+        return None
 
 def find_object_by(object_name, field_type, field):
     object = parse_object_name(object_name)
@@ -50,16 +76,16 @@ def find_object_by(object_name, field_type, field):
     found = False
     delete_range = get_values(
         SPREADSHEET_ID,
-        range_name(object.sheet_name, object.delete_col, object.start_row, object.delete_col, object.end_row)
+        range_name(object['sheet_name'], object['delete_col'], object['start_row'], object['delete_col'], object['end_row'])
     )
     delete_list = delete_range.get('values', [])
-    type_col = object.start_col
+    type_col = object['start_col']
     match field_type:
         case 'id':
             type_col = 'A'
             type_range = get_values(
                 SPREADSHEET_ID,
-                range_name(object.sheet_name, type_col, object.start_row, type_col, object.end_row)
+                range_name(object['sheet_name'], type_col, object['start_row'], type_col, object['end_row'])
             )
             type_list = type_range.get('values', [])
             while (pos < len(type_list)):
@@ -71,7 +97,7 @@ def find_object_by(object_name, field_type, field):
             type_col = 'B'
             type_range = get_values(
                 SPREADSHEET_ID,
-                range_name(object.sheet_name, type_col, object.start_row, type_col, object.end_row)
+                range_name(object['sheet_name'], type_col, object['start_row'], type_col, object['end_row'])
             )
             type_list = type_range.get('values', [])
             while (pos < len(type_list)):
@@ -81,7 +107,6 @@ def find_object_by(object_name, field_type, field):
                 pos += 1
     result = [found, pos]
     return result
-
 
 def append_object(object_name, values):
     object = parse_object_name(object_name)
@@ -98,13 +123,12 @@ def append_object(object_name, values):
         return False
     value_range = append_values(
         SPREADSHEET_ID,
-        range_name(object.sheet_name, object.start_col, object.start_row, object.delete_col, object.end_row),
+        range_name(object['sheet_name'], object['start_col'], object['start_row'], object['delete_col'], object['end_row']),
         [values]
     )
     result = value_range.get('updates', [])
     # print(result)
     return result
-
 
 def get_objects(object_name):
     object = parse_object_name(object_name)
@@ -112,12 +136,11 @@ def get_objects(object_name):
         return False
     value_range = get_values(
         SPREADSHEET_ID,
-        range_name(object.sheet_name, object.start_col, object.start_row, object.end_col, object.end_row)
+        range_name(object['sheet_name'], object['start_col'], object['start_row'], object['end_col'], object['end_row'])
     )
     result = value_range.get('values', [])
     # print(result)
     return result
-
 
 def get_object_by_id(object_name, id):
     object = parse_object_name(object_name)
@@ -132,12 +155,11 @@ def get_object_by_id(object_name, id):
     pos = find_result[1]
     value_range = get_values(
         SPREADSHEET_ID,
-        range_name(object.sheet_name, object.start_col, pos + 2, object.end_col, pos + 2)
+        range_name(object['sheet_name'], object['start_col'], pos + 2, object['end_col'], pos + 2)
     )
     result = value_range.get('values', [])
     # print(result)
     return result
-
 
 def get_objects_by_name(object_name, name):
     object = parse_object_name(object_name)
@@ -152,12 +174,11 @@ def get_objects_by_name(object_name, name):
     pos = find_result[1]
     value_range = get_values(
         SPREADSHEET_ID,
-        range_name(object.sheet_name, object.start_col, pos + 2, object.end_col, pos + 2)
+        range_name(object['sheet_name'], object['start_col'], pos + 2, object['end_col'], pos + 2)
     )
     result = value_range.get('values', [])
     # print(result)
     return result
-
 
 def update_object(object_name, values):
     object = parse_object_name(object_name)
@@ -174,13 +195,12 @@ def update_object(object_name, values):
     pos = find_result[1]
     value_range = update_values(
         SPREADSHEET_ID,
-        range_name(object.sheet_name, object.start_col, pos + 2, object.end_col, pos + 2),
+        range_name(object['sheet_name'], object['start_col'], pos + 2, object['end_col'], pos + 2),
         [values]
     )
     result = value_range
     # print(result)
     return result
-
 
 def delete_object_by_id(object_name, id):
     object = parse_object_name(object_name)
@@ -197,17 +217,16 @@ def delete_object_by_id(object_name, id):
     pos = find_result[1]
     value_range = update_values(
         SPREADSHEET_ID,
-        range_name(object.sheet_name, object.delete_col, pos + 2, object.delete_col, pos + 2),
+        range_name(object['sheet_name'], object['delete_col'], pos + 2, object['delete_col'], pos + 2),
         [values]
     )
     result = value_range
-    print(result)
+    # print(result)
     return result
-
 
 if __name__ == '__main__':
     object_name = 'lc'
-    print(get_objects(object_name))
+    # print(get_objects(object_name))
     # get_object_by_id(object_name, '10')
     # get_objects_by_name(object_name, 'K')
     # append_object(object_name, ['12', 'test', '3', '5', '2', '100', '2000', '10', '10', '80000'])
