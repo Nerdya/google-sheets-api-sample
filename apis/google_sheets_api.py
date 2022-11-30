@@ -65,14 +65,13 @@ def parse_object_name(object_name):
     else:
         return None
 
-def find_object_by(object_name, field_type, field):
+def find_object_by(object_name, field_type, field, pos = 0):
     object = parse_object_name(object_name)
     if (object == None):
         return [False, 0]
     if (not field_type or not field):
         print('Null field_type or field!')
         return [False, 0]
-    pos = 0
     found = False
     delete_range = get_values(
         SPREADSHEET_ID,
@@ -167,16 +166,18 @@ def get_objects_by_name(object_name, name):
         return False
     if (not name):
         return get_objects(object_name)
-    find_result = find_object_by(object_name, 'name', name)
+    pos_arr = []
+    find_result = find_object_by(object_name, 'name', name, 0)
     if (not find_result[0]):
         print('No name found.')
         return False
-    pos = find_result[1]
-    value_range = get_values(
-        SPREADSHEET_ID,
-        range_name(object['sheet_name'], object['start_col'], pos + 2, object['end_col'], pos + 2)
-    )
-    result = value_range.get('values', [])
+    while (find_result[0]):
+        pos_arr.append(find_result[1])
+        find_result = find_object_by(object_name, 'name', name, find_result[1] + 1)
+    all_result = get_objects(object_name)
+    result = []
+    for i in pos_arr:
+        result.append(all_result[i])
     # print(result)
     return result
 

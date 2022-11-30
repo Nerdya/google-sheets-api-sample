@@ -22,7 +22,6 @@ class BookFrame(tk.Frame):
         label_arr = []
         entry_arr = []
         cb_index_arr = [2, 3, 4, 5]
-        cb_value_arr = []
         object_names = ['publisher', 'author', 'category', 'position']
         id_list_arr = {
             'publisher': [],
@@ -36,6 +35,7 @@ class BookFrame(tk.Frame):
             'category': [],
             'position': []
         }
+        search_var = tk.StringVar()
 
         # Get combobox values
         def get_cb_values():
@@ -73,8 +73,7 @@ class BookFrame(tk.Frame):
                 # Clear the treeview list items
                 for item in tree.get_children():
                     tree.delete(item)
-
-                searchValue = book_vars[1].get()
+                searchValue = search_var.get()
                 result = get_objects_by_name('book', searchValue)
                 if (not result or len(result) == 0):
                     showerror(title='Error', message='Không có dữ liệu.')
@@ -88,8 +87,6 @@ class BookFrame(tk.Frame):
             except Exception as e:
                 print('search()', e)
                 pass
-            # finally:
-            #     book_vars[1].delete(0, 'end')
 
         def add():
             print('add')
@@ -104,57 +101,43 @@ class BookFrame(tk.Frame):
         menu_left = tk.Frame(self)
         menu_left.columnconfigure(0, weight=1)
         menu_left.rowconfigure(0, weight=0)
-        menu_left.rowconfigure(1, weight=0)
-        menu_left.rowconfigure(2, weight=1)
+        menu_left.rowconfigure(1, weight=1)
+        menu_left.rowconfigure(2, weight=0)
 
         menu_left.grid(column=0, row=0, sticky=tk.NSEW, padx=(10, 0), pady=10)
 
         # Upper left menu
         menu_upper_left = tk.Frame(menu_left, highlightbackground='#ababab', highlightthickness=1)
-        menu_upper_left.columnconfigure(0, weight=1)
+        menu_upper_left.columnconfigure(0, weight=2)
+        menu_upper_left.columnconfigure(1, weight=1)
         menu_upper_left.rowconfigure(0, weight=1)
         
         menu_upper_left.grid(column=0, row=0, sticky=tk.NSEW)
 
-        button_search = ttk.Button(menu_upper_left, text='Tìm', compound=tk.LEFT, command=lambda: search())
-        button_search.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
+        entry_search = ttk.Entry(menu_upper_left, textvariable=search_var)
+        entry_search.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
+
+        button_search = ttk.Button(menu_upper_left, text='Tìm tên sách', compound=tk.LEFT, command=lambda: search())
+        button_search.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
         # Middle left menu
         menu_middle_left = tk.Frame(menu_left, highlightbackground='#ababab', highlightthickness=1)
         menu_middle_left.columnconfigure(0, weight=1)
-        menu_middle_left.columnconfigure(1, weight=1)
-        menu_middle_left.columnconfigure(2, weight=1)
-        menu_middle_left.rowconfigure(0, weight=1)
-
-        menu_middle_left.grid(column=0, row=1, sticky=tk.NSEW, pady=10)
-
-        button_add = ttk.Button(menu_middle_left, text='Thêm', compound=tk.LEFT, command=lambda: add())
-        button_add.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
-
-        button_edit = ttk.Button(menu_middle_left, text='Sửa', compound=tk.LEFT, command=lambda: edit())
-        button_edit.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
-
-        button_delete = ttk.Button(menu_middle_left, text='Xóa', compound=tk.LEFT, command=lambda: delete())
-        button_delete.grid(column=2, row=0, sticky=tk.NSEW, padx=10, pady=10)
-
-        # Lower left menu
-        menu_lower_left = tk.Frame(menu_left, highlightbackground='#ababab', highlightthickness=1)
-        menu_lower_left.columnconfigure(0, weight=1)
-        menu_lower_left.columnconfigure(1, weight=2)
-        menu_lower_left.rowconfigure(10, weight=1)
+        menu_middle_left.columnconfigure(1, weight=2)
+        menu_middle_left.rowconfigure(10, weight=1)
         
-        menu_lower_left.grid(column=0, row=2, sticky=tk.NSEW)
+        menu_middle_left.grid(column=0, row=1, sticky=tk.NSEW, pady=10)
 
         get_cb_values()
 
         # Populate label and entry arrays
         for i in range(len(book_labels)):
-            label_arr.append(ttk.Label(menu_lower_left, text=book_labels[i]))
+            label_arr.append(ttk.Label(menu_middle_left, text=book_labels[i]))
             label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
             if (not i in cb_index_arr):
-                entry_arr.append(ttk.Entry(menu_lower_left, textvariable=book_vars[i]))
+                entry_arr.append(ttk.Entry(menu_middle_left, textvariable=book_vars[i]))
             else:
-                entry_arr.append(ttk.Combobox(menu_lower_left, textvariable=book_vars[i]))
+                entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=book_vars[i]))
                 match i:
                     case 2:
                         entry_arr[i]['values'] = value_list_arr['publisher']
@@ -169,6 +152,24 @@ class BookFrame(tk.Frame):
                 entry_arr[i]['values'] = []
                 entry_arr[i]['state'] = 'readonly'
             entry_arr[i].grid(column=1, row=i, sticky=tk.EW, padx=(0, 10), pady=10)
+
+        # Lower left menu
+        menu_lower_left = tk.Frame(menu_left, highlightbackground='#ababab', highlightthickness=1)
+        menu_lower_left.columnconfigure(0, weight=1)
+        menu_lower_left.columnconfigure(1, weight=1)
+        menu_lower_left.columnconfigure(2, weight=1)
+        menu_lower_left.rowconfigure(0, weight=1)
+
+        menu_lower_left.grid(column=0, row=2, sticky=tk.NSEW)
+
+        button_add = ttk.Button(menu_lower_left, text='Thêm', compound=tk.LEFT, command=lambda: add())
+        button_add.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
+
+        button_edit = ttk.Button(menu_lower_left, text='Sửa', compound=tk.LEFT, command=lambda: edit())
+        button_edit.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
+
+        button_delete = ttk.Button(menu_lower_left, text='Xóa', compound=tk.LEFT, command=lambda: delete())
+        button_delete.grid(column=2, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
         # Right menu
         menu_right = tk.Frame(self, highlightbackground='#ababab', highlightthickness=1)
