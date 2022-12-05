@@ -205,7 +205,6 @@ def get_element_list(object_name):
         if (row_deleted != '1'):
             value = list(all_list[pos])
             value.pop()
-            print(value)
             result.append(value)
     # print(result)
     return result
