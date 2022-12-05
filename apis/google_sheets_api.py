@@ -12,6 +12,7 @@ objects = {
         'id_col': 'A',
         'name_col': 'B',
         'delete_col': 'K',
+        'delete_pos': 10,
         'start_row': 2,
         'end_row': 1000
     },
@@ -22,6 +23,7 @@ objects = {
         'id_col': 'A',
         'name_col': 'B',
         'delete_col': 'K',
+        'delete_pos': 10,
         'start_row': 2,
         'end_row': 1000
     },
@@ -32,6 +34,7 @@ objects = {
         'id_col': 'A',
         'name_col': 'B',
         'delete_col': 'E',
+        'delete_pos': 4,
         'start_row': 2,
         'end_row': 1000
     },
@@ -42,6 +45,7 @@ objects = {
         'id_col': 'A',
         'name_col': 'B',
         'delete_col': 'C',
+        'delete_pos': 2,
         'start_row': 2,
         'end_row': 1000
     },
@@ -52,6 +56,7 @@ objects = {
         'id_col': 'A',
         'name_col': 'B',
         'delete_col': 'C',
+        'delete_pos': 2,
         'start_row': 2,
         'end_row': 1000
     },
@@ -62,6 +67,7 @@ objects = {
         'id_col': 'A',
         'name_col': 'B',
         'delete_col': 'C',
+        'delete_pos': 2,
         'start_row': 2,
         'end_row': 1000
     }
@@ -76,11 +82,19 @@ def parse_object_name(object_name):
     else: return None
 
 def get_all_list(object):
-    all_range = get_values(
+    value_range = get_values(
+        SPREADSHEET_ID,
+        range_name(object['sheet_name'], object['start_col'], object['start_row'], object['delete_col'], object['end_row'])
+    )
+    result = value_range.get('values', [])
+    return result
+
+def get_value_list(object):
+    value_range = get_values(
         SPREADSHEET_ID,
         range_name(object['sheet_name'], object['start_col'], object['start_row'], object['end_col'], object['end_row'])
     )
-    result = all_range.get('values', [])
+    result = value_range.get('values', [])
     return result
 
 def get_id_list(object):
@@ -149,9 +163,9 @@ def filter_element_list_by(object, field_type, field):
                 if (str(name_list[p][0]).find(field) != -1 and delete_list[p][0] != '1'):
                     pos_arr.append(p)
                 p += 1
-            all_list = get_all_list(object)
+            value_list = get_value_list(object)
             for pos in pos_arr:
-                result.append(all_list[pos])
+                result.append(value_list[pos])
     return result
 
 def append_element(object_name, values):
@@ -183,7 +197,16 @@ def get_element_list(object_name):
     object = parse_object_name(object_name)
     if (object == None): return False
 
-    result = get_all_list(object)
+    result = []
+    all_list = get_all_list(object)
+    for pos in range(len(all_list)):
+        # Check if IsDeleted
+        row_deleted = all_list[pos][object['delete_pos']]
+        if (row_deleted != '1'):
+            value = list(all_list[pos])
+            value.pop()
+            print(value)
+            result.append(value)
     # print(result)
     return result
 
@@ -212,7 +235,7 @@ def get_element_list_by(object_name, field_type, field):
     # Check
     object = parse_object_name(object_name)
     if (object == None): return False
-    if (not field): return get_all_list(object)
+    if (not field): return get_value_list(object)
 
     result = filter_element_list_by(object, field_type, field)
     # print(result)

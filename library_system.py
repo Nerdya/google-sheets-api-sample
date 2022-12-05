@@ -19,50 +19,6 @@ from modules.ReportLibraryCardFrame import ReportLibraryCardFrame
 from modules.ReportOverdueBookFrame import ReportOverdueBookFrame
 from modules.ReturnBookFrame import ReturnBookFrame
 
-# def importbook_button():
-
-#     def item_selected(event): # hàm lựa chọn sách trên bảng
-#         for selected_item in tree.selection():
-#             item = tree.item(selected_item)
-#             record = item['values']
-#     def add_book_to_db(): # hàm lựa chọn sách trên bảng rồi thêm vào db
-#         for selected_item in tree.selection():
-#             item = tree.item(selected_item)
-#             record = item.get("values")
-#             record[0] = str(record[0])
-#             try:
-#                 result = append_object('book', record)
-#                 if (result):
-#                     tk.messagebox.showinfo(title='Hi', message='Thêm sách thành công!')
-#                 else:
-#                     tk.messagebox.showerror(title='Hi', message='Thêm sách thất bại!')
-#             except Exception as e:
-#                 print(e)
-#             finally:
-#                 pass
-
-#     # Đọc data từ file excel
-#     data = xlrd.open_workbook('book.xls')
-#     sheet = data.sheet_by_index(0)
-#     for row in range(1, sheet.nrows):
-#         row_values = ()
-#         for cell in range(sheet.ncols):
-#             cell_value = sheet.row_values(row)[cell]
-#             if (isinstance(cell_value, float)):
-#                 row_values += (int(cell_value),)
-#             else:
-#                 row_values += (cell_value,)
-#         try:
-#             tree.insert('', tk.END, values=row_values)
-#         except Exception:
-#             pass
-
-#     tree.bind('<<TreeviewSelect>>', item_selected)
-
-#     # nút xác nhận chọn sách để đưa vào db
-#     btn_select = tk.Button(importwindow, text='Nhập sách', command=add_book_to_db)
-#     btn_select.place(x=1100, y=100)
-
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
