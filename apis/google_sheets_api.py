@@ -9,6 +9,8 @@ objects = {
         'sheet_name': 'TheThuVien',
         'start_col': 'A',
         'end_col': 'J',
+        'id_col': 'A',
+        'name_col': 'B',
         'delete_col': 'K',
         'start_row': 2,
         'end_row': 1000
@@ -17,6 +19,8 @@ objects = {
         'sheet_name': 'Sach',
         'start_col': 'A',
         'end_col': 'J',
+        'id_col': 'A',
+        'name_col': 'B',
         'delete_col': 'K',
         'start_row': 2,
         'end_row': 1000
@@ -25,6 +29,8 @@ objects = {
         'sheet_name': 'NhaXuatBan',
         'start_col': 'A',
         'end_col': 'D',
+        'id_col': 'A',
+        'name_col': 'B',
         'delete_col': 'E',
         'start_row': 2,
         'end_row': 1000
@@ -33,6 +39,8 @@ objects = {
         'sheet_name': 'TacGia',
         'start_col': 'A',
         'end_col': 'B',
+        'id_col': 'A',
+        'name_col': 'B',
         'delete_col': 'C',
         'start_row': 2,
         'end_row': 1000
@@ -41,6 +49,8 @@ objects = {
         'sheet_name': 'TheLoaiSach',
         'start_col': 'A',
         'end_col': 'B',
+        'id_col': 'A',
+        'name_col': 'B',
         'delete_col': 'C',
         'start_row': 2,
         'end_row': 1000
@@ -49,6 +59,8 @@ objects = {
         'sheet_name': 'ViTri',
         'start_col': 'A',
         'end_col': 'B',
+        'id_col': 'A',
+        'name_col': 'B',
         'delete_col': 'C',
         'start_row': 2,
         'end_row': 1000
@@ -60,66 +72,103 @@ def range_name(sheet_name, start_col, start_row, end_col, end_row):
 
 def parse_object_name(object_name):
     result = objects[object_name]
-    if (result):
-        return result
-    else:
-        return None
+    if (result): return result
+    else: return None
 
-def find_object_by(object_name, field_type, field, pos = 0):
-    object = parse_object_name(object_name)
-    if (object == None):
-        return [False, 0]
-    if (not field_type or not field):
-        print('Null field_type or field!')
-        return [False, 0]
-    found = False
+def get_all_list(object):
+    all_range = get_values(
+        SPREADSHEET_ID,
+        range_name(object['sheet_name'], object['start_col'], object['start_row'], object['end_col'], object['end_row'])
+    )
+    result = all_range.get('values', [])
+    return result
+
+def get_id_list(object):
+    id_range = get_values(
+        SPREADSHEET_ID,
+        range_name(object['sheet_name'], object['id_col'], object['start_row'], object['id_col'], object['end_row'])
+    )
+    result = id_range.get('values', [])
+    return result
+
+def get_name_list(object):
+    name_range = get_values(
+        SPREADSHEET_ID,
+        range_name(object['sheet_name'], object['name_col'], object['start_row'], object['name_col'], object['end_row'])
+    )
+    result = name_range.get('values', [])
+    return result
+
+def get_delete_list(object):
     delete_range = get_values(
         SPREADSHEET_ID,
         range_name(object['sheet_name'], object['delete_col'], object['start_row'], object['delete_col'], object['end_row'])
     )
-    delete_list = delete_range.get('values', [])
-    type_col = object['start_col']
+    result = delete_range.get('values', [])
+    return result
+
+def find_element_by(object, field_type, field, found = False, pos = 0):
+    # Check
+    if (not field_type or not field):
+        print('Null field_type or field!')
+        return [found, pos]
+
+    delete_list = get_delete_list(object)
     match field_type:
         case 'id':
-            type_col = 'A'
-            type_range = get_values(
-                SPREADSHEET_ID,
-                range_name(object['sheet_name'], type_col, object['start_row'], type_col, object['end_row'])
-            )
-            type_list = type_range.get('values', [])
-            while (pos < len(type_list)):
-                if (field == type_list[pos][0] and delete_list[pos][0] != '1'):
+            id_list = get_id_list(object)
+            while (pos < len(id_list)):
+                if (field == id_list[pos][0] and delete_list[pos][0] != '1'):
                     found = True
                     break
                 pos += 1
         case 'name':
-            type_col = 'B'
-            type_range = get_values(
-                SPREADSHEET_ID,
-                range_name(object['sheet_name'], type_col, object['start_row'], type_col, object['end_row'])
-            )
-            type_list = type_range.get('values', [])
-            while (pos < len(type_list)):
-                if (str(type_list[pos][0]).find(field) != -1 and delete_list[pos][0] != '1'):
+            name_list = get_name_list(object)
+            while (pos < len(name_list)):
+                if (str(name_list[pos][0]).find(field) != -1 and delete_list[pos][0] != '1'):
                     found = True
                     break
                 pos += 1
     result = [found, pos]
     return result
 
-def append_object(object_name, values):
+def filter_element_list_by(object, field_type, field):
+    # Check
+    if (not field_type or not field):
+        print('Null field_type or field!')
+        return []
+
+    delete_list = get_delete_list(object)
+    pos_arr = []
+    result = []
+    match field_type:
+        case 'name':
+            name_list = get_name_list(object)
+            p = 0
+            while (p < len(name_list)):
+                if (str(name_list[p][0]).find(field) != -1 and delete_list[p][0] != '1'):
+                    pos_arr.append(p)
+                p += 1
+            all_list = get_all_list(object)
+            for pos in pos_arr:
+                result.append(all_list[pos])
+    return result
+
+def append_element(object_name, values):
+    # Check
     object = parse_object_name(object_name)
-    if (object == None):
-        return False
+    if (object == None): return False
     if (not values):
         print('Null values!')
         return False
-    id = values[0]
-    values.append('0')
-    find_result = find_object_by(object_name, 'id', id)
+
+    find_result = find_element_by(object, 'id', values[0])
     if (find_result[0]):
         print('Id already exists!')
         return False
+    
+    values.append('0')
+
     value_range = append_values(
         SPREADSHEET_ID,
         range_name(object['sheet_name'], object['start_col'], object['start_row'], object['delete_col'], object['end_row']),
@@ -129,29 +178,28 @@ def append_object(object_name, values):
     # print(result)
     return result
 
-def get_objects(object_name):
+def get_element_list(object_name):
+    # Check
     object = parse_object_name(object_name)
-    if (object == None):
-        return False
-    value_range = get_values(
-        SPREADSHEET_ID,
-        range_name(object['sheet_name'], object['start_col'], object['start_row'], object['end_col'], object['end_row'])
-    )
-    result = value_range.get('values', [])
+    if (object == None): return False
+
+    result = get_all_list(object)
     # print(result)
     return result
 
-def get_object_by_id(object_name, id):
+def get_element_by_id(object_name, id):
+    # Check
     object = parse_object_name(object_name)
-    if (object == None):
-        return False
-    if (not id):
-        return get_objects(object_name)
-    find_result = find_object_by(object_name, 'id', id)
+    if (object == None): return False
+    if (not id): return get_element_list(object_name)
+
+    find_result = find_element_by(object, 'id', id)
     if (not find_result[0]):
         print('No id found.')
         return False
+
     pos = find_result[1]
+
     value_range = get_values(
         SPREADSHEET_ID,
         range_name(object['sheet_name'], object['start_col'], pos + 2, object['end_col'], pos + 2)
@@ -160,40 +208,31 @@ def get_object_by_id(object_name, id):
     # print(result)
     return result
 
-def get_objects_by_name(object_name, name):
+def get_element_list_by(object_name, field_type, field):
+    # Check
     object = parse_object_name(object_name)
-    if (object == None):
-        return False
-    if (not name):
-        return get_objects(object_name)
-    pos_arr = []
-    find_result = find_object_by(object_name, 'name', name, 0)
-    if (not find_result[0]):
-        print('No name found.')
-        return False
-    while (find_result[0]):
-        pos_arr.append(find_result[1])
-        find_result = find_object_by(object_name, 'name', name, find_result[1] + 1)
-    all_result = get_objects(object_name)
-    result = []
-    for i in pos_arr:
-        result.append(all_result[i])
+    if (object == None): return False
+    if (not field): return get_all_list(object)
+
+    result = filter_element_list_by(object, field_type, field)
     # print(result)
     return result
 
-def update_object(object_name, values):
+def update_element(object_name, values):
+    # Check
     object = parse_object_name(object_name)
-    if (object == None):
-        return False
+    if (object == None): return False
     if (not values):
         print('Null values!')
         return False
-    id = values[0]
-    find_result = find_object_by(object_name, 'id', id)
+
+    find_result = find_element_by(object, 'id', values[0])
     if (not find_result[0]):
         print('No id found.')
         return False
+
     pos = find_result[1]
+
     value_range = update_values(
         SPREADSHEET_ID,
         range_name(object['sheet_name'], object['start_col'], pos + 2, object['end_col'], pos + 2),
@@ -203,19 +242,22 @@ def update_object(object_name, values):
     # print(result)
     return result
 
-def delete_object_by_id(object_name, id):
+def delete_element_by_id(object_name, id):
+    # Check
     object = parse_object_name(object_name)
-    if (object == None):
-        return False
+    if (object == None): return False
     if (not id):
         print('Null id!')
         return False
-    values = ['1']
-    find_result = find_object_by(object_name, 'id', id)
+
+    find_result = find_element_by(object, 'id', id)
     if (not find_result[0]):
         print('No id found.')
         return False
+
     pos = find_result[1]
+    values = ['1']
+
     value_range = update_values(
         SPREADSHEET_ID,
         range_name(object['sheet_name'], object['delete_col'], pos + 2, object['delete_col'], pos + 2),

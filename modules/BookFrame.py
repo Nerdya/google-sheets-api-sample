@@ -41,7 +41,7 @@ class BookFrame(tk.Frame):
         def get_cb_values():
             try:
                 for object_name in object_names:
-                    result = get_objects(object_name)
+                    result = get_element_list(object_name)
                     if (not result or len(result) == 0):
                         showerror(title='Error', message='Không có dữ liệu.')
                     else:
@@ -73,8 +73,8 @@ class BookFrame(tk.Frame):
                 # Clear the treeview list items
                 for item in tree.get_children():
                     tree.delete(item)
-                searchValue = search_var.get()
-                result = get_objects_by_name('book', searchValue)
+                search_value = search_var.get()
+                result = get_element_list_by('book', 'name', search_value)
                 if (not result or len(result) == 0):
                     showerror(title='Error', message='Không có dữ liệu.')
                 else:
@@ -206,7 +206,7 @@ class BookFrame(tk.Frame):
                 for item in tree.get_children():
                     tree.delete(item)
 
-                result = get_objects('book')
+                result = get_element_list('book')
                 if (not result or len(result) == 0):
                     showerror(title='Error', message='Không có dữ liệu.')
                 else:
