@@ -14,7 +14,8 @@ class BookFrame(tk.Frame):
         self.rowconfigure(0, weight=1)
 
         # Variables
-        book_headings = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
+        book_columns = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
+        book_column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
         book_labels = ['Mã sách', 'Tên sách', 'NXB', 'Tác giả', 'Thể loại sách', 'Vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
         book_vars = []
         for i in range(len(book_labels)):
@@ -95,7 +96,7 @@ class BookFrame(tk.Frame):
                 result = append_element('book', values)
                 if (result):
                     showinfo(title='Success', message='Thêm sách thành công!')
-                    get_books()
+                    get_all()
                 else:
                     showerror(title='Error', message='Thêm sách thất bại!')
             except Exception as e:
@@ -109,7 +110,7 @@ class BookFrame(tk.Frame):
                 result = update_element('book', values)
                 if (result):
                     showinfo(title='Success', message='Sửa sách thành công!')
-                    get_books()
+                    get_all()
                 else:
                     showerror(title='Error', message='Sửa sách thất bại!')
             except Exception as e:
@@ -123,7 +124,7 @@ class BookFrame(tk.Frame):
                 result = delete_element_by_id('book', values[0])
                 if (result):
                     showinfo(title='Success', message='Xóa sách thành công!')
-                    get_books()
+                    get_all()
                 else:
                     showerror(title='Error', message='Xóa sách thất bại!')
             except Exception as e:
@@ -228,22 +229,36 @@ class BookFrame(tk.Frame):
 
         menu_right.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        # Define columns
-        columns = book_headings
-
-        tree = ttk.Treeview(menu_right, columns=columns, show='headings')
+        tree = ttk.Treeview(menu_right, columns=book_columns, show='headings')
 
         # Define headings
-        for i in range(len(columns)):
-            tree.heading(columns[i], text=book_labels[i])
-
-        widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
+        for i in range(len(book_columns)):
+            tree.heading(book_columns[i], text=book_labels[i])
 
         # Customize columns
-        for i in range(len(columns)):
-            tree.column(columns[i], width=widths[i], anchor=tk.W)
+        for i in range(len(book_columns)):
+            tree.column(book_columns[i], width=book_column_widths[i], anchor=tk.W)
 
-        def get_books():
+        def update_entry_values(record):
+            for i in range(len(book_vars)):
+                book_vars[i].set(record[i])
+
+        def item_selected(event):
+            for selected_item in tree.selection():
+                item = tree.item(selected_item)
+                record = item['values']
+                update_entry_values(record)
+
+        # Selection event
+        tree.bind('<<TreeviewSelect>>', item_selected)
+
+        tree.grid(row=0, column=0, sticky=tk.NSEW)
+
+        scrollbar = ttk.Scrollbar(menu_right, orient='vertical', command=tree.yview)
+        tree.configure(yscroll=scrollbar.set)
+        scrollbar.grid(column=1, row=0, sticky=tk.NS)
+
+        def get_all():
             try:
                 # Clear the treeview list items
                 for item in tree.get_children():
@@ -264,23 +279,4 @@ class BookFrame(tk.Frame):
                 pass
 
         # Populate data
-        get_books()
-
-        def update_entry_values(record):
-            for i in range(len(book_vars)):
-                book_vars[i].set(record[i])
-
-        def item_selected(event):
-            for selected_item in tree.selection():
-                item = tree.item(selected_item)
-                record = item['values']
-                update_entry_values(record)
-
-        # Selection event
-        tree.bind('<<TreeviewSelect>>', item_selected)
-
-        tree.grid(row=0, column=0, sticky=tk.NSEW)
-
-        scrollbar = ttk.Scrollbar(menu_right, orient='vertical', command=tree.yview)
-        tree.configure(yscroll=scrollbar.set)
-        scrollbar.grid(column=1, row=0, sticky=tk.NS)
+        get_all()
