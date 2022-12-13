@@ -234,7 +234,7 @@ def get_element_list_by(object_name, field_type, field):
     # Check
     object = parse_object_name(object_name)
     if (object == None): return False
-    if (not field): return get_value_list(object)
+    if (not field): return get_element_list(object_name)
 
     result = filter_element_list_by(object, field_type, field)
     # print(result)
