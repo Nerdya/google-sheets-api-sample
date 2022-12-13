@@ -4,7 +4,7 @@ from tkinter.messagebox import showinfo, showerror
 from apis.google_sheets_api import *
 from modules.AboutFrame import AboutFrame
 from modules.AuthorFrame import AuthorFrame
-from modules.BookFrame import BookFrame
+from modules.BookFrame import BookFrame, __init__
 from modules.CategoryFrame import CategoryFrame
 from modules.ImportBookFrame import ImportBookFrame
 from modules.LendBookFrame import LendBookFrame
@@ -109,7 +109,9 @@ class App(tk.Tk):
     def show_frame(self, container):
         frame = self.frames[container]
         frame.tkraise()
-        print(frame)
+
+        # Call frame's apis
+        frame.call_apis()
     
 if __name__ == '__main__':
     app = App()

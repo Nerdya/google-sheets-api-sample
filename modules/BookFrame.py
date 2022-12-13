@@ -22,14 +22,14 @@ class BookFrame(tk.Frame):
             book_vars.append(tk.StringVar())
         search_var = tk.StringVar()
         cb_index_arr = [2, 3, 4, 5]
-        cb_object_names = ['publisher', 'author', 'category', 'position']
-        id_list_arr = {
+        self.cb_object_names = ['publisher', 'author', 'category', 'position']
+        self.id_list_arr = {
             'publisher': [],
             'author': [],
             'category': [],
             'position': []
         }
-        value_list_arr = {
+        self.value_list_arr = {
             'publisher': [],
             'author': [],
             'category': [],
@@ -39,15 +39,15 @@ class BookFrame(tk.Frame):
         entry_arr = []
 
         def cb_id_to_value(object_name, id):
-            for i in range(len(id_list_arr[object_name])):
-                if (id == id_list_arr[object_name][i]):
-                    return value_list_arr[object_name][i]
+            for i in range(len(self.id_list_arr[object_name])):
+                if (id == self.id_list_arr[object_name][i]):
+                    return self.value_list_arr[object_name][i]
             return ''
 
         def cb_value_to_id(object_name, value):
-            for i in range(len(value_list_arr[object_name])):
-                if (value == value_list_arr[object_name][i]):
-                    return id_list_arr[object_name][i]
+            for i in range(len(self.value_list_arr[object_name])):
+                if (value == self.value_list_arr[object_name][i]):
+                    return self.id_list_arr[object_name][i]
             return ''
 
         def parse_row(row):
@@ -56,7 +56,7 @@ class BookFrame(tk.Frame):
                 if (not i in cb_index_arr):
                     parsed_row.append(row[i])
                 else:
-                    object_name = cb_object_names[i - 2]
+                    object_name = self.cb_object_names[i - 2]
                     parsed_row.append(cb_id_to_value(object_name, row[i]))
             return parsed_row
 
@@ -66,15 +66,15 @@ class BookFrame(tk.Frame):
                 if (not i in cb_index_arr):
                     values.append(book_vars[i].get())
                 else:
-                    object_name = cb_object_names[i - 2]
+                    object_name = self.cb_object_names[i - 2]
                     values.append(cb_value_to_id(object_name, book_vars[i].get()))
             return values
 
         def search():
             try:
                 # Clear the treeview list items
-                for item in tree.get_children():
-                    tree.delete(item)
+                for item in self.tree.get_children():
+                    self.tree.delete(item)
                 search_value = search_var.get()
                 result = get_element_list_by('book', 'name', search_value)
                 if (not result or len(result) == 0):
@@ -85,7 +85,7 @@ class BookFrame(tk.Frame):
                         parsed_row = parse_row(row)
                         rows.append(tuple(parsed_row))
                     for row in rows:
-                        tree.insert('', tk.END, values=row)
+                        self.tree.insert('', tk.END, values=row)
             except Exception as e:
                 print('search()', e)
                 pass
@@ -96,7 +96,7 @@ class BookFrame(tk.Frame):
                 result = append_element('book', values)
                 if (result):
                     showinfo(title='Success', message='Thêm sách thành công!')
-                    get_all()
+                    self.get_all()
                 else:
                     showerror(title='Error', message='Thêm sách thất bại!')
             except Exception as e:
@@ -110,7 +110,7 @@ class BookFrame(tk.Frame):
                 result = update_element('book', values)
                 if (result):
                     showinfo(title='Success', message='Sửa sách thành công!')
-                    get_all()
+                    self.get_all()
                 else:
                     showerror(title='Error', message='Sửa sách thất bại!')
             except Exception as e:
@@ -124,7 +124,7 @@ class BookFrame(tk.Frame):
                 result = delete_element_by_id('book', values[0])
                 if (result):
                     showinfo(title='Success', message='Xóa sách thành công!')
-                    get_all()
+                    self.get_all()
                 else:
                     showerror(title='Error', message='Xóa sách thất bại!')
             except Exception as e:
@@ -163,21 +163,6 @@ class BookFrame(tk.Frame):
         
         menu_middle_left.grid(column=0, row=1, sticky=tk.NSEW, pady=10)
 
-        # Get combobox values
-        def get_cb_values():
-            try:
-                for object_name in cb_object_names:
-                    result = get_element_list(object_name)
-                    if (not result or len(result) == 0):
-                        showerror(title='Error', message='Không có dữ liệu.')
-                    else:
-                        for row in result:
-                            id_list_arr[object_name].append(row[0])
-                            value_list_arr[object_name].append(row[1])
-            except Exception as e:
-                print('get_cb_values()', e)
-                pass
-
         # Populate label and entry arrays
         for i in range(len(book_labels)):
             label_arr.append(ttk.Label(menu_middle_left, text=book_labels[i]))
@@ -188,13 +173,13 @@ class BookFrame(tk.Frame):
                 entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=book_vars[i]))
                 match i:
                     case 2:
-                        entry_arr[i]['values'] = value_list_arr['publisher']
+                        entry_arr[i]['values'] = self.value_list_arr['publisher']
                     case 3:
-                        entry_arr[i]['values'] = value_list_arr['author']
+                        entry_arr[i]['values'] = self.value_list_arr['author']
                     case 4:
-                        entry_arr[i]['values'] = value_list_arr['category']
+                        entry_arr[i]['values'] = self.value_list_arr['category']
                     case 5:
-                        entry_arr[i]['values'] = value_list_arr['position']
+                        entry_arr[i]['values'] = self.value_list_arr['position']
                 entry_arr[i]['state'] = 'readonly'
             entry_arr[i].grid(column=1, row=i, sticky=tk.EW, padx=(0, 10), pady=10)
 
@@ -224,56 +209,71 @@ class BookFrame(tk.Frame):
 
         menu_right.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        tree = ttk.Treeview(menu_right, columns=book_columns, show='headings')
+        self.tree = ttk.Treeview(menu_right, columns=book_columns, show='headings')
 
         # Define headings
         for i in range(len(book_columns)):
-            tree.heading(book_columns[i], text=book_labels[i])
+            self.tree.heading(book_columns[i], text=book_labels[i])
 
         # Customize columns
         for i in range(len(book_columns)):
-            tree.column(book_columns[i], width=book_column_widths[i], anchor=tk.W)
+            self.tree.column(book_columns[i], width=book_column_widths[i], anchor=tk.W)
 
         def update_entry_values(record):
             for i in range(len(book_vars)):
                 book_vars[i].set(record[i])
 
         def item_selected(event):
-            for selected_item in tree.selection():
-                item = tree.item(selected_item)
+            for selected_item in self.tree.selection():
+                item = self.tree.item(selected_item)
                 record = item['values']
                 update_entry_values(record)
 
         # Selection event
-        tree.bind('<<TreeviewSelect>>', item_selected)
+        self.tree.bind('<<TreeviewSelect>>', item_selected)
 
-        tree.grid(row=0, column=0, sticky=tk.NSEW)
+        self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
-        scrollbar = ttk.Scrollbar(menu_right, orient='vertical', command=tree.yview)
-        tree.configure(yscroll=scrollbar.set)
+        scrollbar = ttk.Scrollbar(menu_right, orient='vertical', command=self.tree.yview)
+        self.tree.configure(yscroll=scrollbar.set)
         scrollbar.grid(column=1, row=0, sticky=tk.NS)
 
-        # Populate data
-        def get_all():
-            try:
-                # Clear the treeview list items
-                for item in tree.get_children():
-                    tree.delete(item)
-
-                result = get_element_list('book')
+    # Get combobox values
+    def get_cb_values(self):
+        try:
+            for object_name in self.cb_object_names:
+                result = get_element_list(object_name)
                 if (not result or len(result) == 0):
                     showerror(title='Error', message='Không có dữ liệu.')
                 else:
-                    rows = []
                     for row in result:
-                        parsed_row = parse_row(row)
-                        rows.append(tuple(parsed_row))
-                    for row in rows:
-                        tree.insert('', tk.END, values=row)
-            except Exception as e:
-                print('get_books()', e)
-                pass
+                        self.id_list_arr[object_name].append(row[0])
+                        self.value_list_arr[object_name].append(row[1])
+        except Exception as e:
+            print('get_cb_values()', e)
+            pass
 
-        # API calling functions
-        get_cb_values()
-        get_all()
+    # Populate data
+    def get_all(self):
+        try:
+            # Clear the treeview list items
+            for item in self.tree.get_children():
+                self.tree.delete(item)
+
+            result = get_element_list('book')
+            if (not result or len(result) == 0):
+                showerror(title='Error', message='Không có dữ liệu.')
+            else:
+                rows = []
+                for row in result:
+                    parsed_row = self.parse_row(row)
+                    rows.append(tuple(parsed_row))
+                for row in rows:
+                    self.tree.insert('', tk.END, values=row)
+        except Exception as e:
+            print('get_books()', e)
+            pass
+
+    def call_apis(self):
+        self.get_cb_values()
+        self.get_all()
