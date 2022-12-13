@@ -205,7 +205,6 @@ class BookFrame(tk.Frame):
         scrollbar = ttk.Scrollbar(menu_right, orient='vertical', command=self.tree.yview)
         self.tree.configure(yscroll=scrollbar.set)
         scrollbar.grid(column=1, row=0, sticky=tk.NS)
-        
 
     def cb_id_to_value(self, object_name, id):
         for i in range(len(self.id_list_arr[object_name])):
