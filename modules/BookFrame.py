@@ -17,9 +17,9 @@ class BookFrame(tk.Frame):
         self.columns = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
         self.column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
         self.labels = ['Mã sách', 'Tên sách', 'NXB', 'Tác giả', 'Thể loại sách', 'Vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
-        self.book_vars = []
+        self.vars = []
         for i in range(len(self.labels)):
-            self.book_vars.append(tk.StringVar())
+            self.vars.append(tk.StringVar())
         self.search_var = tk.StringVar()
         self.cb_index_arr = [2, 3, 4, 5]
         self.cb_object_names = ['publisher', 'author', 'category', 'position']
@@ -136,9 +136,9 @@ class BookFrame(tk.Frame):
             self.label_arr.append(ttk.Label(menu_middle_left, text=self.labels[i]))
             self.label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
             if (not i in self.cb_index_arr):
-                self.entry_arr.append(ttk.Entry(menu_middle_left, textvariable=self.book_vars[i]))
+                self.entry_arr.append(ttk.Entry(menu_middle_left, textvariable=self.vars[i]))
             else:
-                self.entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=self.book_vars[i]))
+                self.entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=self.vars[i]))
                 match i:
                     case 2:
                         self.entry_arr[i]['values'] = self.value_list_arr['publisher']
@@ -188,8 +188,8 @@ class BookFrame(tk.Frame):
             self.tree.column(self.columns[i], width=self.column_widths[i], anchor=tk.W)
 
         def update_entry_values(record):
-            for i in range(len(self.book_vars)):
-                self.book_vars[i].set(record[i])
+            for i in range(len(self.vars)):
+                self.vars[i].set(record[i])
 
         def item_selected(event):
             for selected_item in self.tree.selection():
@@ -231,12 +231,12 @@ class BookFrame(tk.Frame):
 
     def get_entry_values(self):
         values = []
-        for i in range(len(self.book_vars)):
+        for i in range(len(self.vars)):
             if (not i in self.cb_index_arr):
-                values.append(self.book_vars[i].get())
+                values.append(self.vars[i].get())
             else:
                 object_name = self.cb_object_names[i - 2]
-                values.append(self.cb_value_to_id(object_name, self.book_vars[i].get()))
+                values.append(self.cb_value_to_id(object_name, self.vars[i].get()))
         return values
 
     # Get combobox values
