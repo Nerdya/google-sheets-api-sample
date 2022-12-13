@@ -14,13 +14,13 @@ class BookFrame(tk.Frame):
         self.rowconfigure(0, weight=1)
 
         # Variables
-        book_columns = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
-        book_column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
-        book_labels = ['Mã sách', 'Tên sách', 'NXB', 'Tác giả', 'Thể loại sách', 'Vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
+        self.columns = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
+        self.column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
+        self.labels = ['Mã sách', 'Tên sách', 'NXB', 'Tác giả', 'Thể loại sách', 'Vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
         self.book_vars = []
-        for i in range(len(book_labels)):
+        for i in range(len(self.labels)):
             self.book_vars.append(tk.StringVar())
-        search_var = tk.StringVar()
+        self.search_var = tk.StringVar()
         self.cb_index_arr = [2, 3, 4, 5]
         self.cb_object_names = ['publisher', 'author', 'category', 'position']
         self.id_list_arr = {
@@ -35,15 +35,15 @@ class BookFrame(tk.Frame):
             'category': [],
             'position': []
         }
-        label_arr = []
-        entry_arr = []
+        self.label_arr = []
+        self.entry_arr = []
 
         def search():
             try:
                 # Clear the treeview list items
                 for item in self.tree.get_children():
                     self.tree.delete(item)
-                search_value = search_var.get()
+                search_value = self.search_var.get()
                 result = get_element_list_by('book', 'name', search_value)
                 if (not result or len(result) == 0):
                     showerror(title='Error', message='Không có dữ liệu.')
@@ -117,7 +117,7 @@ class BookFrame(tk.Frame):
         
         menu_upper_left.grid(column=0, row=0, sticky=tk.NSEW)
 
-        entry_search = ttk.Entry(menu_upper_left, textvariable=search_var)
+        entry_search = ttk.Entry(menu_upper_left, textvariable=self.search_var)
         entry_search.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
         button_search = ttk.Button(menu_upper_left, text='Tìm tên sách', compound=tk.LEFT, command=lambda: search())
@@ -132,24 +132,24 @@ class BookFrame(tk.Frame):
         menu_middle_left.grid(column=0, row=1, sticky=tk.NSEW, pady=10)
 
         # Populate label and entry arrays
-        for i in range(len(book_labels)):
-            label_arr.append(ttk.Label(menu_middle_left, text=book_labels[i]))
-            label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
+        for i in range(len(self.labels)):
+            self.label_arr.append(ttk.Label(menu_middle_left, text=self.labels[i]))
+            self.label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
             if (not i in self.cb_index_arr):
-                entry_arr.append(ttk.Entry(menu_middle_left, textvariable=self.book_vars[i]))
+                self.entry_arr.append(ttk.Entry(menu_middle_left, textvariable=self.book_vars[i]))
             else:
-                entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=self.book_vars[i]))
+                self.entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=self.book_vars[i]))
                 match i:
                     case 2:
-                        entry_arr[i]['values'] = self.value_list_arr['publisher']
+                        self.entry_arr[i]['values'] = self.value_list_arr['publisher']
                     case 3:
-                        entry_arr[i]['values'] = self.value_list_arr['author']
+                        self.entry_arr[i]['values'] = self.value_list_arr['author']
                     case 4:
-                        entry_arr[i]['values'] = self.value_list_arr['category']
+                        self.entry_arr[i]['values'] = self.value_list_arr['category']
                     case 5:
-                        entry_arr[i]['values'] = self.value_list_arr['position']
-                entry_arr[i]['state'] = 'readonly'
-            entry_arr[i].grid(column=1, row=i, sticky=tk.EW, padx=(0, 10), pady=10)
+                        self.entry_arr[i]['values'] = self.value_list_arr['position']
+                self.entry_arr[i]['state'] = 'readonly'
+            self.entry_arr[i].grid(column=1, row=i, sticky=tk.EW, padx=(0, 10), pady=10)
 
         # Lower left menu
         menu_lower_left = tk.Frame(menu_left, highlightbackground='#ababab', highlightthickness=1)
@@ -177,15 +177,15 @@ class BookFrame(tk.Frame):
 
         menu_right.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        self.tree = ttk.Treeview(menu_right, columns=book_columns, show='headings')
+        self.tree = ttk.Treeview(menu_right, columns=self.columns, show='headings')
 
         # Define headings
-        for i in range(len(book_columns)):
-            self.tree.heading(book_columns[i], text=book_labels[i])
+        for i in range(len(self.columns)):
+            self.tree.heading(self.columns[i], text=self.labels[i])
 
         # Customize columns
-        for i in range(len(book_columns)):
-            self.tree.column(book_columns[i], width=book_column_widths[i], anchor=tk.W)
+        for i in range(len(self.columns)):
+            self.tree.column(self.columns[i], width=self.column_widths[i], anchor=tk.W)
 
         def update_entry_values(record):
             for i in range(len(self.book_vars)):
