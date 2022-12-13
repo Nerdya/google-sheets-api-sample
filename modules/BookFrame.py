@@ -17,7 +17,7 @@ class BookFrame(tk.Frame):
         self.frame_code = 'book'
         self.frame_name = 'sách'
         self.columns = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
-        self.column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
+        self.column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]    # 860
         self.labels = ['Mã sách', 'Tên sách', 'NXB', 'Tác giả', 'Thể loại sách', 'Vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
         self.vars = []
         for i in range(len(self.labels)):
