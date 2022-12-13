@@ -178,30 +178,25 @@ class BookFrame(tk.Frame):
                 print('get_cb_values()', e)
                 pass
 
-        get_cb_values()
-
         # Populate label and entry arrays
-        def populate_label_entry_arr():
-            for i in range(len(book_labels)):
-                label_arr.append(ttk.Label(menu_middle_left, text=book_labels[i]))
-                label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
-                if (not i in cb_index_arr):
-                    entry_arr.append(ttk.Entry(menu_middle_left, textvariable=book_vars[i]))
-                else:
-                    entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=book_vars[i]))
-                    match i:
-                        case 2:
-                            entry_arr[i]['values'] = value_list_arr['publisher']
-                        case 3:
-                            entry_arr[i]['values'] = value_list_arr['author']
-                        case 4:
-                            entry_arr[i]['values'] = value_list_arr['category']
-                        case 5:
-                            entry_arr[i]['values'] = value_list_arr['position']
-                    entry_arr[i]['state'] = 'readonly'
-                entry_arr[i].grid(column=1, row=i, sticky=tk.EW, padx=(0, 10), pady=10)
-
-        populate_label_entry_arr()
+        for i in range(len(book_labels)):
+            label_arr.append(ttk.Label(menu_middle_left, text=book_labels[i]))
+            label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
+            if (not i in cb_index_arr):
+                entry_arr.append(ttk.Entry(menu_middle_left, textvariable=book_vars[i]))
+            else:
+                entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=book_vars[i]))
+                match i:
+                    case 2:
+                        entry_arr[i]['values'] = value_list_arr['publisher']
+                    case 3:
+                        entry_arr[i]['values'] = value_list_arr['author']
+                    case 4:
+                        entry_arr[i]['values'] = value_list_arr['category']
+                    case 5:
+                        entry_arr[i]['values'] = value_list_arr['position']
+                entry_arr[i]['state'] = 'readonly'
+            entry_arr[i].grid(column=1, row=i, sticky=tk.EW, padx=(0, 10), pady=10)
 
         # Lower left menu
         menu_lower_left = tk.Frame(menu_left, highlightbackground='#ababab', highlightthickness=1)
@@ -258,6 +253,7 @@ class BookFrame(tk.Frame):
         tree.configure(yscroll=scrollbar.set)
         scrollbar.grid(column=1, row=0, sticky=tk.NS)
 
+        # Populate data
         def get_all():
             try:
                 # Clear the treeview list items
@@ -278,5 +274,6 @@ class BookFrame(tk.Frame):
                 print('get_books()', e)
                 pass
 
-        # Populate data
+        # API calling functions
+        get_cb_values()
         get_all()

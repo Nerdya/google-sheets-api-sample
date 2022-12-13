@@ -109,6 +109,7 @@ class App(tk.Tk):
     def show_frame(self, container):
         frame = self.frames[container]
         frame.tkraise()
+        print(frame)
     
 if __name__ == '__main__':
     app = App()
