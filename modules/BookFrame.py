@@ -14,6 +14,8 @@ class BookFrame(tk.Frame):
         self.rowconfigure(0, weight=1)
 
         # Variables
+        self.frame_code = 'book'
+        self.frame_name = 'sách'
         self.columns = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
         self.column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
         self.labels = ['Mã sách', 'Tên sách', 'NXB', 'Tác giả', 'Thể loại sách', 'Vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
@@ -21,6 +23,10 @@ class BookFrame(tk.Frame):
         for i in range(len(self.labels)):
             self.vars.append(tk.StringVar())
         self.search_var = tk.StringVar()
+        self.label_arr = []
+        self.entry_arr = []
+
+        # Combobox variables
         self.cb_index_arr = [2, 3, 4, 5]
         self.cb_object_names = ['publisher', 'author', 'category', 'position']
         self.id_list_arr = {
@@ -35,70 +41,6 @@ class BookFrame(tk.Frame):
             'category': [],
             'position': []
         }
-        self.label_arr = []
-        self.entry_arr = []
-
-        def search():
-            try:
-                # Clear the treeview list items
-                for item in self.tree.get_children():
-                    self.tree.delete(item)
-                search_value = self.search_var.get()
-                result = get_element_list_by('book', 'name', search_value)
-                if (not result or len(result) == 0):
-                    showerror(title='Error', message='Không có dữ liệu.')
-                else:
-                    rows = []
-                    for row in result:
-                        parsed_row = self.parse_row(row)
-                        rows.append(tuple(parsed_row))
-                    for row in rows:
-                        self.tree.insert('', tk.END, values=row)
-            except Exception as e:
-                print('search()', e)
-                pass
-
-        def add():
-            try:
-                values = self.get_entry_values()
-                result = append_element('book', values)
-                if (result):
-                    showinfo(title='Success', message='Thêm sách thành công!')
-                    self.get_all()
-                else:
-                    showerror(title='Error', message='Thêm sách thất bại!')
-            except Exception as e:
-                print('add()', e)
-            finally:
-                pass
-
-        def edit():
-            try:
-                values = values = self.get_entry_values()
-                result = update_element('book', values)
-                if (result):
-                    showinfo(title='Success', message='Sửa sách thành công!')
-                    self.get_all()
-                else:
-                    showerror(title='Error', message='Sửa sách thất bại!')
-            except Exception as e:
-                print('add()', e)
-            finally:
-                pass
-
-        def delete():
-            try:
-                values = values = self.get_entry_values()
-                result = delete_element_by_id('book', values[0])
-                if (result):
-                    showinfo(title='Success', message='Xóa sách thành công!')
-                    self.get_all()
-                else:
-                    showerror(title='Error', message='Xóa sách thất bại!')
-            except Exception as e:
-                print('add()', e)
-            finally:
-                pass
 
         # Left menu
         menu_left = tk.Frame(self)
@@ -120,7 +62,7 @@ class BookFrame(tk.Frame):
         entry_search = ttk.Entry(menu_upper_left, textvariable=self.search_var)
         entry_search.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        button_search = ttk.Button(menu_upper_left, text='Tìm tên sách', compound=tk.LEFT, command=lambda: search())
+        button_search = ttk.Button(menu_upper_left, text='Tìm tên ' + self.frame_name, compound=tk.LEFT, command=lambda: self.search())
         button_search.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
         # Middle left menu
@@ -253,6 +195,68 @@ class BookFrame(tk.Frame):
             print('get_cb_values()', e)
             pass
 
+    def search(self):
+        try:
+            # Clear the treeview list items
+            for item in self.tree.get_children():
+                self.tree.delete(item)
+            search_value = self.search_var.get()
+            result = get_element_list_by(self.frame_code, 'name', search_value)
+            if (not result or len(result) == 0):
+                showerror(title='Error', message='Không có dữ liệu.')
+            else:
+                rows = []
+                for row in result:
+                    parsed_row = self.parse_row(row)
+                    rows.append(tuple(parsed_row))
+                for row in rows:
+                    self.tree.insert('', tk.END, values=row)
+        except Exception as e:
+            print('search()', e)
+            pass
+
+    def add(self):
+        try:
+            values = self.get_entry_values()
+            result = append_element(self.frame_code, values)
+            if (result):
+                showinfo(title='Success', message='Thêm ' + self.frame_name + ' thành công!')
+                self.get_all()
+            else:
+                showerror(title='Error', message='Thêm ' + self.frame_name + ' thất bại!')
+        except Exception as e:
+            print('add()', e)
+        finally:
+            pass
+
+    def edit(self):
+        try:
+            values = values = self.get_entry_values()
+            result = update_element(self.frame_code, values)
+            if (result):
+                showinfo(title='Success', message='Sửa ' + self.frame_name + ' thành công!')
+                self.get_all()
+            else:
+                showerror(title='Error', message='Sửa ' + self.frame_name + ' thất bại!')
+        except Exception as e:
+            print('edit()', e)
+        finally:
+            pass
+
+    def delete(self):
+        try:
+            values = values = self.get_entry_values()
+            result = delete_element_by_id(self.frame_code, values[0])
+            if (result):
+                showinfo(title='Success', message='Xóa ' + self.frame_name + ' thành công!')
+                self.get_all()
+            else:
+                showerror(title='Error', message='Xóa ' + self.frame_name + ' thất bại!')
+        except Exception as e:
+            print('delete()', e)
+        finally:
+            pass
+
     # Populate data
     def get_all(self):
         try:
@@ -260,7 +264,7 @@ class BookFrame(tk.Frame):
             for item in self.tree.get_children():
                 self.tree.delete(item)
 
-            result = get_element_list('book')
+            result = get_element_list(self.frame_code)
             if (not result or len(result) == 0):
                 showerror(title='Error', message='Không có dữ liệu.')
             else:
