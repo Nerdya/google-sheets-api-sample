@@ -102,13 +102,13 @@ class BookFrame(tk.Frame):
 
         menu_lower_left.grid(column=0, row=2, sticky=tk.NSEW)
 
-        button_add = ttk.Button(menu_lower_left, text='Thêm', compound=tk.LEFT, command=lambda: add())
+        button_add = ttk.Button(menu_lower_left, text='Thêm', compound=tk.LEFT, command=lambda: self.add())
         button_add.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        button_edit = ttk.Button(menu_lower_left, text='Sửa', compound=tk.LEFT, command=lambda: edit())
+        button_edit = ttk.Button(menu_lower_left, text='Sửa', compound=tk.LEFT, command=lambda: self.edit())
         button_edit.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        button_delete = ttk.Button(menu_lower_left, text='Xóa', compound=tk.LEFT, command=lambda: delete())
+        button_delete = ttk.Button(menu_lower_left, text='Xóa', compound=tk.LEFT, command=lambda: self.delete())
         button_delete.grid(column=2, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
         # Right menu
