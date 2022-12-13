@@ -17,11 +17,11 @@ class BookFrame(tk.Frame):
         book_columns = ('id', 'name', 'publisher_name', 'author_name', 'category_name', 'position_name', 'published_year', 'total_amount', 'available_amount', 'price')
         book_column_widths = [60, 160, 100, 100, 100, 100, 60, 60, 60, 60]
         book_labels = ['Mã sách', 'Tên sách', 'NXB', 'Tác giả', 'Thể loại sách', 'Vị trí', 'Năm XB', 'SL tổng', 'SL tồn kho', 'Đơn giá']
-        book_vars = []
+        self.book_vars = []
         for i in range(len(book_labels)):
-            book_vars.append(tk.StringVar())
+            self.book_vars.append(tk.StringVar())
         search_var = tk.StringVar()
-        cb_index_arr = [2, 3, 4, 5]
+        self.cb_index_arr = [2, 3, 4, 5]
         self.cb_object_names = ['publisher', 'author', 'category', 'position']
         self.id_list_arr = {
             'publisher': [],
@@ -38,38 +38,6 @@ class BookFrame(tk.Frame):
         label_arr = []
         entry_arr = []
 
-        def cb_id_to_value(object_name, id):
-            for i in range(len(self.id_list_arr[object_name])):
-                if (id == self.id_list_arr[object_name][i]):
-                    return self.value_list_arr[object_name][i]
-            return ''
-
-        def cb_value_to_id(object_name, value):
-            for i in range(len(self.value_list_arr[object_name])):
-                if (value == self.value_list_arr[object_name][i]):
-                    return self.id_list_arr[object_name][i]
-            return ''
-
-        def parse_row(row):
-            parsed_row = []
-            for i in range(len(row)):
-                if (not i in cb_index_arr):
-                    parsed_row.append(row[i])
-                else:
-                    object_name = self.cb_object_names[i - 2]
-                    parsed_row.append(cb_id_to_value(object_name, row[i]))
-            return parsed_row
-
-        def get_entry_values():
-            values = []
-            for i in range(len(book_vars)):
-                if (not i in cb_index_arr):
-                    values.append(book_vars[i].get())
-                else:
-                    object_name = self.cb_object_names[i - 2]
-                    values.append(cb_value_to_id(object_name, book_vars[i].get()))
-            return values
-
         def search():
             try:
                 # Clear the treeview list items
@@ -82,7 +50,7 @@ class BookFrame(tk.Frame):
                 else:
                     rows = []
                     for row in result:
-                        parsed_row = parse_row(row)
+                        parsed_row = self.parse_row(row)
                         rows.append(tuple(parsed_row))
                     for row in rows:
                         self.tree.insert('', tk.END, values=row)
@@ -92,7 +60,7 @@ class BookFrame(tk.Frame):
 
         def add():
             try:
-                values = get_entry_values()
+                values = self.get_entry_values()
                 result = append_element('book', values)
                 if (result):
                     showinfo(title='Success', message='Thêm sách thành công!')
@@ -106,7 +74,7 @@ class BookFrame(tk.Frame):
 
         def edit():
             try:
-                values = values = get_entry_values()
+                values = values = self.get_entry_values()
                 result = update_element('book', values)
                 if (result):
                     showinfo(title='Success', message='Sửa sách thành công!')
@@ -120,7 +88,7 @@ class BookFrame(tk.Frame):
 
         def delete():
             try:
-                values = values = get_entry_values()
+                values = values = self.get_entry_values()
                 result = delete_element_by_id('book', values[0])
                 if (result):
                     showinfo(title='Success', message='Xóa sách thành công!')
@@ -167,10 +135,10 @@ class BookFrame(tk.Frame):
         for i in range(len(book_labels)):
             label_arr.append(ttk.Label(menu_middle_left, text=book_labels[i]))
             label_arr[i].grid(column=0, row=i, sticky=tk.W, padx=10, pady=10)
-            if (not i in cb_index_arr):
-                entry_arr.append(ttk.Entry(menu_middle_left, textvariable=book_vars[i]))
+            if (not i in self.cb_index_arr):
+                entry_arr.append(ttk.Entry(menu_middle_left, textvariable=self.book_vars[i]))
             else:
-                entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=book_vars[i]))
+                entry_arr.append(ttk.Combobox(menu_middle_left, textvariable=self.book_vars[i]))
                 match i:
                     case 2:
                         entry_arr[i]['values'] = self.value_list_arr['publisher']
@@ -220,8 +188,8 @@ class BookFrame(tk.Frame):
             self.tree.column(book_columns[i], width=book_column_widths[i], anchor=tk.W)
 
         def update_entry_values(record):
-            for i in range(len(book_vars)):
-                book_vars[i].set(record[i])
+            for i in range(len(self.book_vars)):
+                self.book_vars[i].set(record[i])
 
         def item_selected(event):
             for selected_item in self.tree.selection():
@@ -237,6 +205,39 @@ class BookFrame(tk.Frame):
         scrollbar = ttk.Scrollbar(menu_right, orient='vertical', command=self.tree.yview)
         self.tree.configure(yscroll=scrollbar.set)
         scrollbar.grid(column=1, row=0, sticky=tk.NS)
+        
+
+    def cb_id_to_value(self, object_name, id):
+        for i in range(len(self.id_list_arr[object_name])):
+            if (id == self.id_list_arr[object_name][i]):
+                return self.value_list_arr[object_name][i]
+        return ''
+
+    def cb_value_to_id(self, object_name, value):
+        for i in range(len(self.value_list_arr[object_name])):
+            if (value == self.value_list_arr[object_name][i]):
+                return self.id_list_arr[object_name][i]
+        return ''
+
+    def parse_row(self, row):
+        parsed_row = []
+        for i in range(len(row)):
+            if (not i in self.cb_index_arr):
+                parsed_row.append(row[i])
+            else:
+                object_name = self.cb_object_names[i - 2]
+                parsed_row.append(self.cb_id_to_value(object_name, row[i]))
+        return parsed_row
+
+    def get_entry_values(self):
+        values = []
+        for i in range(len(self.book_vars)):
+            if (not i in self.cb_index_arr):
+                values.append(self.book_vars[i].get())
+            else:
+                object_name = self.cb_object_names[i - 2]
+                values.append(self.cb_value_to_id(object_name, self.book_vars[i].get()))
+        return values
 
     # Get combobox values
     def get_cb_values(self):
@@ -271,7 +272,7 @@ class BookFrame(tk.Frame):
                 for row in rows:
                     self.tree.insert('', tk.END, values=row)
         except Exception as e:
-            print('get_books()', e)
+            print('get_all()', e)
             pass
 
     def call_apis(self):
