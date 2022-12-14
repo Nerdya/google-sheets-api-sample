@@ -4,11 +4,12 @@ from tkinter.messagebox import showinfo, showerror
 from apis.google_sheets_api import *
 from modules.AboutFrame import AboutFrame
 from modules.AuthorFrame import AuthorFrame
-from modules.BookFrame import BookFrame, __init__
+from modules.BookFrame import BookFrame
 from modules.CategoryFrame import CategoryFrame
 from modules.ImportBookFrame import ImportBookFrame
 from modules.LendBookFrame import LendBookFrame
 from modules.LibraryCardFrame import LibraryCardFrame
+from modules.LoadingFrame import LoadingFrame
 from modules.PositionFrame import PositionFrame
 from modules.PublisherFrame import PublisherFrame
 from modules.ReissueLibraryCardFrame import ReissueLibraryCardFrame
@@ -44,6 +45,7 @@ class App(tk.Tk):
             ImportBookFrame,
             LendBookFrame,
             LibraryCardFrame,
+            LoadingFrame,
             PositionFrame,
             PublisherFrame,
             ReissueLibraryCardFrame,
@@ -58,8 +60,12 @@ class App(tk.Tk):
             self.frames[F] = frame
             frame.grid(column=0, row=0, sticky=tk.NSEW)
 
+        # Loading frame
+        self.loading_frame = LoadingFrame(container, self)
+        self.loading_frame.grid(column=0, row=0, sticky=tk.NSEW)
+
         # Default frame
-        self.show_frame(BookFrame)
+        self.show_frame(LendBookFrame)
 
         # Create a menubar
         menubar = tk.Menu(self)
@@ -107,11 +113,19 @@ class App(tk.Tk):
         report_menu.add_command(label='Thống kê độc giả', command=lambda: self.show_frame(ReportLibraryCardFrame))
     
     def show_frame(self, container):
+        # Call requested frame
         frame = self.frames[container]
-        frame.tkraise()
 
+        self.config(cursor="wait")
+        # Show loading frame
+        self.loading_frame.tkraise()
+        self.update()
         # Call frame's apis
         frame.call_apis()
+        self.config(cursor="")
+    
+        # Show frame
+        frame.tkraise()
     
 if __name__ == '__main__':
     app = App()
