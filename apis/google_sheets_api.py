@@ -16,6 +16,50 @@ objects = {
         'start_row': 2,
         'end_row': 1000
     },
+    'lend_slip': {
+        'sheet_name': 'PhieuMuon',
+        'start_col': 'A',
+        'end_col': 'D',
+        'id_col': 'A',
+        'name_col': 'A',
+        'delete_col': 'E',
+        'delete_pos': 4,
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'lend_slip_detail': {
+        'sheet_name': 'ChiTietPhieuMuon',
+        'start_col': 'A',
+        'end_col': 'B',
+        'id_col': 'A',
+        'name_col': 'A',
+        'delete_col': 'C',
+        'delete_pos': 2,
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'return_slip': {
+        'sheet_name': 'PhieuTra',
+        'start_col': 'A',
+        'end_col': 'D',
+        'id_col': 'A',
+        'name_col': 'A',
+        'delete_col': 'E',
+        'delete_pos': 4,
+        'start_row': 2,
+        'end_row': 1000
+    },
+    'return_slip_detail': {
+        'sheet_name': 'ChiTietPhieuTra',
+        'start_col': 'A',
+        'end_col': 'B',
+        'id_col': 'A',
+        'name_col': 'A',
+        'delete_col': 'C',
+        'delete_pos': 2,
+        'start_row': 2,
+        'end_row': 1000
+    },
     'book': {
         'sheet_name': 'Sach',
         'start_col': 'A',
@@ -136,13 +180,6 @@ def find_element_by(object, field_type, field, found = False, pos = 0):
                     found = True
                     break
                 pos += 1
-        case 'name':
-            name_list = get_name_list(object)
-            while (pos < len(name_list)):
-                if (str(name_list[pos][0]).find(field) != -1 and delete_list[pos][0] != '1'):
-                    found = True
-                    break
-                pos += 1
     result = [found, pos]
     return result
 
@@ -156,6 +193,16 @@ def filter_element_list_by(object, field_type, field):
     pos_arr = []
     result = []
     match field_type:
+        case 'id':
+            id_list = get_id_list(object)
+            p = 0
+            while (p < len(id_list)):
+                if (field == id_list[p][0] and delete_list[p][0] != '1'):
+                    pos_arr.append(p)
+                p += 1
+            value_list = get_value_list(object)
+            for pos in pos_arr:
+                result.append(value_list[pos])
         case 'name':
             name_list = get_name_list(object)
             p = 0
@@ -168,7 +215,7 @@ def filter_element_list_by(object, field_type, field):
                 result.append(value_list[pos])
     return result
 
-def append_element(object_name, values):
+def append_element(object_name, values, allow_duplicate_ids = False):
     # Check
     object = parse_object_name(object_name)
     if (object == None): return False
@@ -176,10 +223,11 @@ def append_element(object_name, values):
         print('Null values!')
         return False
 
-    find_result = find_element_by(object, 'id', values[0])
-    if (find_result[0]):
-        print('Id already exists!')
-        return False
+    if (not allow_duplicate_ids):
+        find_result = find_element_by(object, 'id', values[0])
+        if (find_result[0]):
+            print('Id already exists!')
+            return False
     
     values.append('0')
 

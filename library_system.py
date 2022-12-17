@@ -65,7 +65,7 @@ class App(tk.Tk):
         self.loading_frame.grid(column=0, row=0, sticky=tk.NSEW)
 
         # Default frame
-        self.show_frame(LendBookFrame)
+        self.show_frame(AboutFrame)
 
         # Create a menubar
         menubar = tk.Menu(self)
@@ -115,15 +115,15 @@ class App(tk.Tk):
     def show_frame(self, container):
         # Call requested frame
         frame = self.frames[container]
-
-        self.config(cursor="wait")
         # Show loading frame
         self.loading_frame.tkraise()
+        # Set cursor busy
+        self.config(cursor="wait")
         self.update()
         # Call frame's apis
         frame.call_apis()
+        # Set cursor unset
         self.config(cursor="")
-    
         # Show frame
         frame.tkraise()
     
