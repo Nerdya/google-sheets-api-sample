@@ -41,11 +41,11 @@ objects = {
     'return_slip': {
         'sheet_name': 'PhieuTra',
         'start_col': 'A',
-        'end_col': 'D',
+        'end_col': 'C',
         'id_col': 'A',
         'name_col': 'A',
-        'delete_col': 'E',
-        'delete_pos': 4,
+        'delete_col': 'D',
+        'delete_pos': 3,
         'start_row': 2,
         'end_row': 1000
     },
