@@ -122,10 +122,10 @@ class ReturnBookFrame(tk.Frame):
         button_add = ttk.Button(menu_lower_left, text='Thêm', compound=tk.LEFT, command=lambda: self.add(self.tree, self.vars, self.frame_code, self.frame_name, False))
         button_add.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        button_edit = ttk.Button(menu_lower_left, text='Sửa', compound=tk.LEFT, command=lambda: self.edit(self.tree, self.vars, self.frame_code, self.frame_name))
+        button_edit = ttk.Button(menu_lower_left, text='Sửa', compound=tk.LEFT, command=lambda: self.edit(self.tree, self.vars, self.frame_code, self.frame_name, False))
         button_edit.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        button_delete = ttk.Button(menu_lower_left, text='Xóa', compound=tk.LEFT, command=lambda: self.delete(self.tree, self.vars, self.frame_code, self.frame_name))
+        button_delete = ttk.Button(menu_lower_left, text='Xóa', compound=tk.LEFT, command=lambda: self.delete(self.tree, self.vars, self.frame_code, self.frame_name, False))
         button_delete.grid(column=2, row=0, sticky=tk.NSEW, padx=10, pady=10)
         button_delete["state"] = "disabled"
 
@@ -237,10 +237,10 @@ class ReturnBookFrame(tk.Frame):
         button_add_2 = ttk.Button(menu_lower_left_2, text='Thêm', compound=tk.LEFT, command=lambda: self.add(self.tree_2, self.vars_2, self.frame_code_2, self.frame_name_2, True, self.vars_2[0]))
         button_add_2.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        button_edit_2 = ttk.Button(menu_lower_left_2, text='Sửa', compound=tk.LEFT, command=lambda: self.edit(self.tree_2, self.vars_2, self.frame_code_2, self.frame_name_2, self.vars_2[0]))
+        button_edit_2 = ttk.Button(menu_lower_left_2, text='Sửa', compound=tk.LEFT, command=lambda: self.edit(self.tree_2, self.vars_2, self.frame_code_2, self.frame_name_2, True, self.vars_2[0]))
         button_edit_2.grid(column=1, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
-        button_delete_2 = ttk.Button(menu_lower_left_2, text='Xóa', compound=tk.LEFT, command=lambda: self.delete(self.tree_2, self.vars_2, self.frame_code_2, self.frame_name_2, self.vars_2[0]))
+        button_delete_2 = ttk.Button(menu_lower_left_2, text='Xóa', compound=tk.LEFT, command=lambda: self.delete(self.tree_2, self.vars_2, self.frame_code_2, self.frame_name_2, True, self.vars_2[0]))
         button_delete_2.grid(column=2, row=0, sticky=tk.NSEW, padx=10, pady=10)
 
         # Right menu
@@ -349,6 +349,15 @@ class ReturnBookFrame(tk.Frame):
     def add(self, tree, vars, frame_code, frame_name, allow_duplicate_ids, id_var = None):
         try:
             values = self.get_entry_values(vars)
+            # Check if book id is duplicated (if allow_duplicate_ids sets to True)
+            if (allow_duplicate_ids):
+                object = parse_object_name(frame_code)
+                if (object == None): return False
+                find_result = find_element_by(object, 'name', values[1])
+                if (find_result[0]):
+                    print('Book id already exists!')
+                    showerror(title='Error', message='Thêm ' + frame_name + ' thất bại!')
+                    return
             result = append_element(frame_code, values, allow_duplicate_ids)
             if (result):
                 showinfo(title='Success', message='Thêm ' + frame_name + ' thành công!')
@@ -363,9 +372,18 @@ class ReturnBookFrame(tk.Frame):
         finally:
             pass
 
-    def edit(self, tree, vars, frame_code, frame_name, id_var = None):
+    def edit(self, tree, vars, frame_code, frame_name, allow_duplicate_ids, id_var = None):
         try:
             values = values = self.get_entry_values(vars)
+            # Check if book id is duplicated (if allow_duplicate_ids sets to True)
+            if (allow_duplicate_ids):
+                object = parse_object_name(frame_code)
+                if (object == None): return False
+                find_result = find_element_by(object, 'name', values[1])
+                if (find_result[0]):
+                    print('Book id already exists!')
+                    showerror(title='Error', message='Thêm ' + frame_name + ' thất bại!')
+                    return
             result = update_element(frame_code, values)
             if (result):
                 showinfo(title='Success', message='Sửa ' + frame_name + ' thành công!')
@@ -380,10 +398,19 @@ class ReturnBookFrame(tk.Frame):
         finally:
             pass
 
-    def delete(self, tree, vars, frame_code, frame_name, id_var = None):
+    def delete(self, tree, vars, frame_code, frame_name, allow_duplicate_ids, id_var = None):
         try:
             values = values = self.get_entry_values(vars)
-            result = delete_element_by_id(frame_code, values[0])
+            # Check if book id is duplicated (if allow_duplicate_ids sets to True)
+            # if (allow_duplicate_ids):
+            #     object = parse_object_name(frame_code)
+            #     if (object == None): return False
+            #     find_result = find_element_by(object, 'name', values[1])
+            #     if (find_result[0]):
+            #         print('Book id already exists!')
+            #         showerror(title='Error', message='Xóa ' + frame_name + ' thất bại!')
+            #         return
+            result = delete_element_by(frame_code, 'name', values[1])
             if (result):
                 showinfo(title='Success', message='Xóa ' + frame_name + ' thành công!')
                 if (id_var):

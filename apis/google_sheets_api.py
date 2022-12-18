@@ -21,7 +21,7 @@ objects = {
         'start_col': 'A',
         'end_col': 'D',
         'id_col': 'A',
-        'name_col': 'A',
+        'name_col': 'B',
         'delete_col': 'E',
         'delete_pos': 4,
         'start_row': 2,
@@ -32,7 +32,7 @@ objects = {
         'start_col': 'A',
         'end_col': 'B',
         'id_col': 'A',
-        'name_col': 'A',
+        'name_col': 'B',
         'delete_col': 'C',
         'delete_pos': 2,
         'start_row': 2,
@@ -43,7 +43,7 @@ objects = {
         'start_col': 'A',
         'end_col': 'C',
         'id_col': 'A',
-        'name_col': 'A',
+        'name_col': 'B',
         'delete_col': 'D',
         'delete_pos': 3,
         'start_row': 2,
@@ -54,7 +54,7 @@ objects = {
         'start_col': 'A',
         'end_col': 'B',
         'id_col': 'A',
-        'name_col': 'A',
+        'name_col': 'B',
         'delete_col': 'C',
         'delete_pos': 2,
         'start_row': 2,
@@ -177,6 +177,13 @@ def find_element_by(object, field_type, field, found = False, pos = 0):
             id_list = get_id_list(object)
             while (pos < len(id_list)):
                 if (field == id_list[pos][0] and delete_list[pos][0] != '1'):
+                    found = True
+                    break
+                pos += 1
+        case 'name':
+            name_list = get_name_list(object)
+            while (pos < len(name_list)):
+                if (field == name_list[pos][0] and delete_list[pos][0] != '1'):
                     found = True
                     break
                 pos += 1
@@ -312,15 +319,15 @@ def update_element(object_name, values):
     # print(result)
     return result
 
-def delete_element_by_id(object_name, id):
+def delete_element_by(object_name, field_type, field):
     # Check
     object = parse_object_name(object_name)
     if (object == None): return False
-    if (not id):
-        print('Null id!')
+    if (not field_type or not field):
+        print('Null field_type or field!')
         return False
 
-    find_result = find_element_by(object, 'id', id)
+    find_result = find_element_by(object, field_type, field)
     if (not find_result[0]):
         print('No id found.')
         return False

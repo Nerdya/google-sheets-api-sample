@@ -182,7 +182,7 @@ class AuthorFrame(tk.Frame):
     def delete(self):
         try:
             values = values = self.get_entry_values()
-            result = delete_element_by_id(self.frame_code, values[0])
+            result = delete_element_by(self.frame_code, 'id', values[0])
             if (result):
                 showinfo(title='Success', message='Xóa ' + self.frame_name + ' thành công!')
                 self.get_all()
