@@ -10,3 +10,6 @@ class ReportOverdueBookFrame(tk.Frame):
 
         label = ttk.Label(self, text='ReportOverdueBookFrame')
         label.pack(ipadx=10, ipady=10)
+
+    def call_apis(self):
+        print('call_apis()')

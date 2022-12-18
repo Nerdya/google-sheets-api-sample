@@ -10,3 +10,6 @@ class ReportBookFrame(tk.Frame):
 
         label = ttk.Label(self, text='ReportBookFrame')
         label.pack(ipadx=10, ipady=10)
+
+    def call_apis(self):
+        print('call_apis()')

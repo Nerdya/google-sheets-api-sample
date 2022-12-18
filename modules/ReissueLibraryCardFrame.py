@@ -10,3 +10,6 @@ class ReissueLibraryCardFrame(tk.Frame):
 
         label = ttk.Label(self, text='ReissueLCFrame')
         label.pack(ipadx=10, ipady=10)
+
+    def call_apis(self):
+        print('call_apis()')
