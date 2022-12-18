@@ -73,6 +73,8 @@ class BookFrame(tk.Frame):
         
         menu_middle_left.grid(column=0, row=1, sticky=tk.NSEW, pady=10)
 
+        self.get_cb_values()
+
         # Populate label and entry arrays
         for i in range(len(self.labels)):
             self.label_arr.append(ttk.Label(menu_middle_left, text=self.labels[i]))
@@ -279,5 +281,5 @@ class BookFrame(tk.Frame):
             pass
 
     def call_apis(self):
-        self.get_cb_values()
+        # self.get_cb_values()
         self.get_all()
